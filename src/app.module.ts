@@ -1,6 +1,8 @@
-import {Module} from '@nestjs/common';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { TimingInterceptor } from './timing.decorator';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -8,7 +10,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         // TypeOrmModule.forRoot(),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: TimingInterceptor,
+        }
+    ],
 })
 export class AppModule {
 }
