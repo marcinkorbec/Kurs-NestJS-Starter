@@ -5,9 +5,11 @@ import { Response } from 'express';
 export class RequestController {
 
     @Get()
-    myFirstAction(
-        @Res() response: Response,
-    ) {
-        return response.json(['Hello World'])
+    myFirstAction() {
+        return {
+            name: 'Marcin',
+            surname: 'Korbecki',
+            age: 35
+        }
     }
 }
