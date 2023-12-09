@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestowyModule } from './testowy/testowy.module';
 import { FoxController } from './fox/fox.controller';
 import { RequestController } from './request/request.controller';
+import { FoxService } from './fox/fox.service';
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import { RequestController } from './request/request.controller';
         {
             provide: APP_INTERCEPTOR,
             useClass: TimingInterceptor,
-        }
+        },
+        FoxService
     ],
 })
 export class AppModule {
