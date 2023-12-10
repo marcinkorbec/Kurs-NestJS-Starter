@@ -17,7 +17,7 @@ import { BasketModule } from './basket/basket.module';
 @Module({
     imports: [
         // TypeOrmModule.forRoot(),
-    TestowyModule,
+        TestowyModule,
         BasketModule],
     controllers: [AppController, FoxController, RequestController, ShopController, BasketController],
     providers: [
