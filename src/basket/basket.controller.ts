@@ -6,17 +6,17 @@ import { CreateBasketItemDto } from '../shared/DTOs/create-basket-item.dto';
 export class BasketController {
     constructor(private readonly basketService: BasketService) { }
 
-    @Post('/')
+    @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
-    addBasketItem(@Body() item: CreateBasketItemDto): any {
-        return this.basketService.addToBasket(item);
+    addBasketItem(@Body() createBasketItemDto: CreateBasketItemDto): any {
+        return this.basketService.addToBasket(createBasketItemDto);
     }
-    @Delete('/:index')
+    @Delete(':index')
     removeBasketItem(@Param('index', ParseIntPipe) index: number): { isSuccess: boolean } {
         return this.basketService.removeFromBasket(index);
     }
 
-    @Get('/')
+    @Get()
     getBasketContents(): any[] {
         return this.basketService.getBasket();
     }
