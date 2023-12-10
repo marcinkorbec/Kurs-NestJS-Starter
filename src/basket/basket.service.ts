@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopService } from '../shop/shop.service';
 import { CreateBasketItemDto } from '../shared/DTOs/create-basket-item.dto';
+import { BasketItem } from 'src/shared';
 
 @Injectable()
 export class BasketService {
@@ -36,5 +37,39 @@ export class BasketService {
 
     getBasket(): any[] {
         return this.basket;
+    }
+
+    getTotalPrice(): number {
+        let totalPrice = 0;
+        for (const item of this.basket) {
+            try {
+                const netPrice = this.shopService.getNetPrice(item.name);
+                totalPrice += netPrice * 1.23;
+            } catch (error) {
+                if (error instanceof NotFoundException) {
+                    throw new Error(`Product ${item.name} is not available`);
+
+                }
+            }
+        }
+        return totalPrice;
+    }
+
+    getAlternativeBasket(): { alternativeBasket: BasketItem[], removedItems: BasketItem[] } {
+        const alternativeBasket = [];
+        const removedItems = [];
+
+        for (const item of this.basket) {
+            try {
+                this.shopService.getNetPrice(item.id);
+                alternativeBasket.push(item);
+            } catch (error) {
+                if (error instanceof NotFoundException) {
+                    removedItems.push(item);
+                }
+            }
+        }
+
+        return { alternativeBasket, removedItems };
     }
 }
