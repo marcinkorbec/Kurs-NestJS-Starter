@@ -3,3 +3,5 @@ export interface ShopItem {
     description: string;
     netPrice: number;
 }
+
+export type GetListOfProducts = ShopItem[]

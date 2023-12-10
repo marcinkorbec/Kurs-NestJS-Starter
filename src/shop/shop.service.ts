@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ShopItem } from '../shared/index';
+import { GetListOfProducts } from '../shared/index';
 
 
 @Injectable()
 export class ShopService {
-    private readonly products: ShopItem[] = [
+    private readonly products: GetListOfProducts = [
         { name: "Czekolada mleczna", description: "Słodka, kremowa czekolada", netPrice: 2.50 },
         { name: "Cukierki owocowe", description: "Cukierki o smaku owocowym", netPrice: 1.20 },
         { name: "Ciastka zbożowe", description: "Ciastka z pełnego ziarna", netPrice: 3.00 },
@@ -72,7 +72,7 @@ export class ShopService {
         { name: "Kruszonki", description: "Kruche kruszonki do posypania ciast", netPrice: 0.49 }
     ];
 
-    getObjects(): ShopItem[] {
+    getObjects(): GetListOfProducts {
         return this.products;
     }
 
@@ -89,5 +89,5 @@ export class ShopService {
         return product.netPrice;
     }
 }
-export { ShopItem };
+export { GetListOfProducts };
 
