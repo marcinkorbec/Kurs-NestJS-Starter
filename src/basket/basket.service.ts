@@ -1,12 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { ShopService } from '../shop/shop.service';
 import { CreateBasketItemDto } from '../shared/DTOs/create-basket-item.dto';
 import { BasketItem } from 'src/shared';
 
 @Injectable()
 export class BasketService {
-    private basket: any[] = [];
-    constructor(private readonly shopService: ShopService) { }
+    private basket: CreateBasketItemDto[] = [];
+
+    constructor(@Inject(forwardRef(() => ShopService)) private shopService: ShopService) { }
 
     addToBasket(item: CreateBasketItemDto): { isSuccess: boolean; index?: number } {
         if (
@@ -35,7 +36,7 @@ export class BasketService {
         }
     }
 
-    getBasket(): any[] {
+    getBasket(): CreateBasketItemDto[] {
         return this.basket;
     }
 
@@ -61,7 +62,7 @@ export class BasketService {
 
         for (const item of this.basket) {
             try {
-                this.shopService.getNetPrice(item.id);
+                this.shopService.getNetPrice(item.name);
                 alternativeBasket.push(item);
             } catch (error) {
                 if (error instanceof NotFoundException) {

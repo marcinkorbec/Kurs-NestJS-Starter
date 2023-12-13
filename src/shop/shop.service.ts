@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { GetListOfProducts } from '../shared/index';
+import { BasketService } from 'src/basket/basket.service';
 
 
 @Injectable()
 export class ShopService {
+
+    constructor(@Inject(forwardRef(() => BasketService)) private basketService: BasketService) { }
+
+
     private readonly products: GetListOfProducts = [
         { name: "Czekolada mleczna", description: "Słodka, kremowa czekolada", netPrice: 2.50 },
         { name: "Cukierki owocowe", description: "Cukierki o smaku owocowym", netPrice: 1.20 },
@@ -87,6 +92,10 @@ export class ShopService {
             throw new NotFoundException('Product not found');
         }
         return product.netPrice;
+    }
+
+    countPromo(): number {
+        return Math.floor(this.basketService.getTotalPrice() / 10);
     }
 }
 export { GetListOfProducts };
