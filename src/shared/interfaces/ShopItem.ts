@@ -4,4 +4,4 @@ export interface ShopItem {
     netPrice: number;
 }
 
-export type GetListOfProducts = ShopItem[]
+export type GetListOfProducts = ShopItem[];
