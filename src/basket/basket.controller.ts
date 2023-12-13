@@ -11,6 +11,7 @@ export class BasketController {
     addBasketItem(@Body() createBasketItemDto: CreateBasketItemDto): any {
         return this.basketService.addToBasket(createBasketItemDto);
     }
+
     @Delete(':index')
     removeBasketItem(@Param('index', ParseIntPipe) index: number): { isSuccess: boolean } {
         return this.basketService.removeFromBasket(index);
