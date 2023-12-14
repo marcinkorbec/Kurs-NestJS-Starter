@@ -1,5 +1,6 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class ShopItem {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -21,4 +22,7 @@ export class ShopItem {
 
     @Column({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
+    netPrice: number;
 }
+
+export type GetListOfProducts = ShopItem[];
