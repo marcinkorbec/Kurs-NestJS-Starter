@@ -40,16 +40,15 @@ export class BasketService {
         return this.basket;
     }
 
-    getTotalPrice(): number {
+    async getTotalPrice(): Promise<number> {
         let totalPrice = 0;
         for (const item of this.basket) {
             try {
-                const netPrice = this.shopService.getNetPrice(item.name);
+                const netPrice = await this.shopService.getNetPrice(item.name);
                 totalPrice += netPrice * 1.23;
             } catch (error) {
                 if (error instanceof NotFoundException) {
                     throw new Error(`Product ${item.name} is not available`);
-
                 }
             }
         }
