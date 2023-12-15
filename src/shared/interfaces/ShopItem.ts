@@ -1,7 +1,7 @@
 export interface ShopItem {
     name: string;
     description: string;
-    netPrice: number;
+    priceNet: number;
 }
 
 export type GetListOfProducts = ShopItem[];
