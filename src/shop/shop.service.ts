@@ -20,6 +20,14 @@ export class ShopService {
         return await this.productRepository.find();
     }
 
+    async getObject(id: string): Promise<ShopItem> {
+        const product = await this.productRepository.findOne(id);
+        if (!product) {
+            throw new NotFoundException('Product not found');
+        }
+        return product;
+    }
+
     async doesProductExist(productName: string): Promise<boolean> {
         const product = await this.productRepository.find({ where: { name: productName } });
         return await product !== undefined;
@@ -34,9 +42,14 @@ export class ShopService {
     }
 
     countPromo(): number {
-        return Math.floor(this.basketService.getTotalPrice() / 10);
+        const totalPrice = this.basketService.getTotalPrice();
+        if (typeof totalPrice !== 'number') {
+            throw new Error('Całkowita cena musi być liczbą');
+        }
+        return Math.floor(totalPrice / 10);
     }
 
 }
 export { GetListOfProducts };
+
 
