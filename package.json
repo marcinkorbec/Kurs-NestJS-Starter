@@ -20,7 +20,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "console:dev": "yarn build && yarn console",
-    "console": "node dist/console.js"
+    "console": "node dist/console.js",
+    "typeorm:migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n NewVersionShopEntity",
+    "typerom:migration:run": "tsc && node ./node_modules/typeorm/cli.js migration:run",
+    "typeorm:migration:revert": "tsc && node ./node_modules/typeorm/cli.js migration:revert"
   },
   "dependencies": {
     "@nest-modules/mailer": "^1.3.22",
