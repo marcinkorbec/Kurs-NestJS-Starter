@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GetListOfProducts, ShopService } from './shop.service';
 import { ShopItem } from './shop-item.entity';
 
@@ -7,8 +7,9 @@ export class ShopController {
     constructor(private shopService: ShopService) { }
 
     @Get()
-    async getItems(): Promise<GetListOfProducts> {
-        return this.shopService.getObjects();
+    async getItems(@Query('page') page: number, @Query('limit') limit: number): Promise<{ items: GetListOfProducts, maxPages: number }> {
+        const { items, maxPages } = await this.shopService.getObjects(page, limit);
+        return { items, maxPages };
     }
 
     @Get('/:id')

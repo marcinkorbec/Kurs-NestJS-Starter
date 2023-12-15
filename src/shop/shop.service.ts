@@ -16,8 +16,15 @@ export class ShopService {
     ) { }
 
 
-    async getObjects(): Promise<GetListOfProducts> {
-        return await this.productRepository.find();
+    async getObjects(page = 1, limit = 5): Promise<{ items: GetListOfProducts, maxPages: number }> {
+        const [items, totalItems] = await this.productRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit
+        });
+
+        const maxPages = Math.ceil(totalItems / limit);
+
+        return { items, maxPages };
     }
 
     async getObject(id: string): Promise<ShopItem> {
