@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ShopItemDetails } from "./shop-item-details.entity";
 
 @Entity()
@@ -28,6 +28,14 @@ export class ShopItem {
     @OneToOne(type => ShopItemDetails)
     @JoinColumn()
     details: ShopItemDetails;
+
+    // subprodukt;
+    @ManyToOne(type => ShopItem, entity => entity.subProducts)
+    mainProduct: ShopItem;
+
+    // produkt główny
+    @OneToMany(type => ShopItem, entity => entity.mainProduct)
+    subProducts: ShopItem[];
 }
 
 export type GetListOfProducts = ShopItem[];
