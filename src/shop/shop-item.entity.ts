@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ShopItemDetails } from "./shop-item-details.entity";
+import { ShopSet } from "./shop-set.entity";
 
 @Entity()
 export class ShopItem {
@@ -36,6 +37,10 @@ export class ShopItem {
     // produkt główny
     @OneToMany(type => ShopItem, entity => entity.mainProduct)
     subProducts: ShopItem[];
+
+    @ManyToOne(type => ShopSet, entity => entity.items)
+    @JoinTable()
+    sets: ShopSet[];
 }
 
 export type GetListOfProducts = ShopItem[];
