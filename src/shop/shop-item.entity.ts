@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ShopItemDetails } from "./shop-item-details.entity";
 import { ShopSet } from "./shop-set.entity";
 
@@ -38,7 +38,7 @@ export class ShopItem {
     @OneToMany(type => ShopItem, entity => entity.mainProduct)
     subProducts: ShopItem[];
 
-    @ManyToOne(type => ShopSet, entity => entity.items)
+    @ManyToMany(type => ShopSet, shopSet => shopSet.items)
     @JoinTable()
     sets: ShopSet[];
 }

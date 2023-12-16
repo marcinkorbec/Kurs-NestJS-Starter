@@ -10,6 +10,6 @@ export class ShopSet extends BaseEntity {
     @Column()
     name: string;
 
-    @ManyToMany(type => ShopItem, entity => entity.sets)
+    @ManyToMany(type => ShopItem, shopItem => shopItem.sets)
     items: ShopItem[];
 }
