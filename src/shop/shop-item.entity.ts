@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ShopItemDetails } from "./shop-item-details.entity";
 
 @Entity()
 export class ShopItem {
@@ -23,6 +24,10 @@ export class ShopItem {
     @Column({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
     netPrice: number;
+
+    @OneToOne(type => ShopItemDetails)
+    @JoinColumn()
+    details: ShopItemDetails;
 }
 
 export type GetListOfProducts = ShopItem[];
