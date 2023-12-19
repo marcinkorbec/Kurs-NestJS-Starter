@@ -31,28 +31,18 @@ export class ShopService {
         return { items, maxPages };
     }
 
-    // async getItemsWithPriceGreaterThanTwo(page: number = 1, limit: number = 5): Promise<{ data: ShopItem[], count: number }> {
-    //     const queryBuilder = this.productRepository.createQueryBuilder('product');
-
-    //     queryBuilder.where('product.priceNet > :price', { price: 1 });
-
-    //     const skippedItems = (page - 1) * limit;
-    //     queryBuilder.skip(skippedItems);
-    //     queryBuilder.take(limit);
-
-    //     const [data, count] = await queryBuilder.getManyAndCount();
-
-    //     return { data, count };
-    // }
-
-    async getItemsWithPriceGreaterThanTwo(): Promise<any[]> {
+    async getItemsWithPriceGreaterThanTwo(page: number = 1, limit: number = 5): Promise<{ data: ShopItem[], count: number }> {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
 
-        queryBuilder.where('product.priceNet > :price', { price: 2 });
+        queryBuilder.where('product.priceNet > :price', { price: 1 });
 
-        const items = await queryBuilder.getMany();
+        const skippedItems = (page - 1) * limit;
+        queryBuilder.skip(skippedItems);
+        queryBuilder.take(limit);
 
-        return items;
+        const [data, count] = await queryBuilder.getManyAndCount();
+
+        return { data, count };
     }
 
     async createProduct(product: ShopItem): Promise<ShopItem> {
