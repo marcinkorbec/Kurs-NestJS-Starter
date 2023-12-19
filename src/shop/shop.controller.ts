@@ -22,8 +22,8 @@ export class ShopController {
         return this.shopService.createProduct(product);
     }
 
-    @Get('/test')
-    async getItemsWithPrice2(): Promise<ShopItem[]> {
-        return this.shopService.getItemsWithPriceGreaterThanTwo();
+    @Get('/test/:page')
+    async getItemsWithPriceGreaterThanTwo(@Param('page') page: number, @Query('limit') limit: number): Promise<{ data: ShopItem[], count: number }> {
+        return this.shopService.getItemsWithPriceGreaterThanTwo(page, limit);
     }
 }
