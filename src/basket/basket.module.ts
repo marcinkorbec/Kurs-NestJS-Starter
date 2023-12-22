@@ -4,9 +4,11 @@ import { BasketController } from './basket.controller';
 import { ShopModule } from 'src/shop/shop.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BasketItem } from './basket-item.entity';
+import { AdministratorModule } from 'src/administrator/administrator.module';
+import { Basket } from './basket.entity';
 
 @Module({
-    imports: [forwardRef(() => ShopModule), TypeOrmModule.forFeature([BasketItem])],
+    imports: [forwardRef(() => ShopModule), forwardRef(() => AdministratorModule), TypeOrmModule.forFeature([BasketItem, Basket])],
     controllers: [BasketController],
     providers: [BasketService],
     exports: [BasketService]
