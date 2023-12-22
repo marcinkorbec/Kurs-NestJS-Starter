@@ -1,11 +1,11 @@
-// import { ShopItem } from 'src/shared';
 import { ShopItem } from 'src/shop/shop-item.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
+import { Basket } from './basket.entity';
 
 @Entity()
 export class BasketItem {
     @PrimaryGeneratedColumn('uuid')
-    id: number;
+    id: string;
 
     @Column()
     name: string;
@@ -16,4 +16,7 @@ export class BasketItem {
     @ManyToMany(() => ShopItem)
     @JoinTable()
     items: ShopItem[];
+
+    @ManyToOne(() => Basket, basket => basket.items)
+    basket: Basket;
 }
