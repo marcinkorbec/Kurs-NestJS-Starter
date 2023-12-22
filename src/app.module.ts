@@ -8,13 +8,15 @@ import { ShopModule } from './shop/shop.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShopItem } from './shop/shop-item.entity';
+import { AdministratorModule } from './administrator/administrator.module';
 
 @Module({
     imports: [
         TypeOrmModule.forRoot({ entities: [ShopItem] }),
         BasketModule,
         ShopModule,
-        UsersModule
+        UsersModule,
+        AdministratorModule
     ],
     controllers: [AppController],
     providers: [
