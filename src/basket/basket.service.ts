@@ -1,56 +1,47 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { ShopService } from '../shop/shop.service';
 import { CreateBasketItemDto } from '../shared/DTOs/create-basket-item.dto';
-import { BasketItem } from 'src/shared';
+// import { BasketItem } from 'src/shared';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BasketItem } from './basket-item.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BasketService {
     private basket: CreateBasketItemDto[] = [];
 
-    constructor(@Inject(forwardRef(() => ShopService)) private shopService: ShopService) { }
+    constructor(
+        @Inject(forwardRef(() => ShopService)) private shopService: ShopService,
+        @InjectRepository(BasketItem) private basketItemRepository: Repository<BasketItem>,
+    ) { }
 
-    addToBasket(item: CreateBasketItemDto): { isSuccess: boolean; index?: number } {
-        if (
-            typeof item.name !== 'string' ||
-            item.name.trim() === '' ||
-            typeof item.count !== 'number' ||
-            item.count < 1
-        ) {
-            console.log('Invalid item:', item);
-            return { isSuccess: false };
-        }
-
-        const index = this.basket.push({ name: item.name, count: item.count }) - 1;
-        console.log('Basket now:', this.basket);
-        return { isSuccess: true, index };
+    async addToBasket(itemDto: CreateBasketItemDto): Promise<BasketItem> {
+        const item = this.basketItemRepository.create(itemDto);
+        await this.basketItemRepository.save(item);
+        return item;
     }
 
-    removeFromBasket(index: number): { isSuccess: boolean } {
-        if (index >= 0 && index < this.basket.length) {
-            this.basket.splice(index, 1);
-            console.log('Basket after removal:', this.basket);
-            return { isSuccess: true };
-        } else {
-            console.log('Attempted to remove invalid index:', index);
-            return { isSuccess: false };
+    async removeFromBasket(id: number): Promise<void> {
+        const result = await this.basketItemRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException('Item not found in basket');
         }
     }
 
-    getBasket(): CreateBasketItemDto[] {
-        return this.basket;
+    async clearBasket(): Promise<void> {
+        await this.basketItemRepository.clear();
+    }
+
+    async getBasket(): Promise<BasketItem[]> {
+        return await this.basketItemRepository.find();
     }
 
     async getTotalPrice(): Promise<number> {
         let totalPrice = 0;
-        for (const item of this.basket) {
-            try {
-                const netPrice = await this.shopService.getNetPrice(item.name);
-                totalPrice += netPrice * 1.23;
-            } catch (error) {
-                if (error instanceof NotFoundException) {
-                    throw new Error(`Product ${item.name} is not available`);
-                }
-            }
+        const basketItems = await this.getBasket();
+        for (const item of basketItems) {
+            const netPrice = await this.shopService.getNetPrice(item.name);
+            totalPrice += netPrice * 1.23; // assuming VAT is 23%
         }
         return totalPrice;
     }
