@@ -82,13 +82,13 @@ export class ShopService {
         return await product.priceNet;
     }
 
-    countPromo(): number {
-        const totalPrice = this.basketService.getTotalPrice();
-        if (typeof totalPrice !== 'number') {
-            throw new Error('Całkowita cena musi być liczbą');
-        }
-        return Math.floor(totalPrice / 10);
-    }
+    // countPromo(): number {
+    //     const totalPrice = this.basketService.getTotalPrice();
+    //     if (typeof totalPrice !== 'number') {
+    //         throw new Error('Całkowita cena musi być liczbą');
+    //     }
+    //     return Math.floor(totalPrice / 10);
+    // }
 
 }
 export { GetListOfProducts };
