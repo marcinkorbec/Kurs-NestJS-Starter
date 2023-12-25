@@ -14,4 +14,8 @@ export class AdministratorService {
     async getAllBasketsWithItems(): Promise<Basket[]> {
         return await this.basketRepository.find({ relations: ['items', 'user'] });
     }
+
+    async getAllUsers() {
+        return await this.userService.getAllUsers();
+    }
 }
