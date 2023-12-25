@@ -1,10 +1,24 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
 
 @Injectable()
 export class PasswordProtectGuard implements CanActivate {
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+    constructor(private reflector: Reflector) { }
+
+    canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest();
-        const { password } = request.body;
-        return password === '123456';
+        const routePassword = this.reflector.get<string>('password', context.getHandler());
+
+        if (!routePassword) {
+            throw new HttpException('Brak hasła w metadanych', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        const requestPassword = request.headers['x-password'];
+
+        if (routePassword !== requestPassword) {
+            throw new HttpException('Zabronione', HttpStatus.FORBIDDEN);
+        }
+
+        return true;
     }
 }
