@@ -9,7 +9,6 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShopItem } from './shop/shop-item.entity';
 import { AdministratorModule } from './administrator/administrator.module';
-import { CacheModule } from './cache/cache.module';
 
 @Module({
     imports: [
@@ -17,8 +16,7 @@ import { CacheModule } from './cache/cache.module';
         BasketModule,
         ShopModule,
         UsersModule,
-        AdministratorModule,
-        CacheModule
+        AdministratorModule
     ],
     controllers: [AppController],
     providers: [
