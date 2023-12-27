@@ -48,6 +48,12 @@ export class BasketController {
         }
     }
 
+    @Get('/count')
+    async getBasketItemCount(@Req() req: Request) {
+        const userId = req.user.id;
+        return await this.basketService.getBasketItemCount(userId);
+    }
+
     @Get()
     async getBasket(@Req() req: Request) {
         const userId = req.user.id;

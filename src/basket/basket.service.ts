@@ -46,6 +46,10 @@ export class BasketService {
             where: { user: { id: userId } }
         });
     }
+    async getBasketItemCount(userId: string): Promise<number> {
+        const basketItems = await this.getBasket(userId);
+        return basketItems.length;
+    }
 
     async getTotalPrice(userId: string): Promise<number> {
         let totalPrice = 0;
@@ -54,6 +58,7 @@ export class BasketService {
             const netPrice = await this.shopService.getNetPrice(item.name);
             totalPrice += netPrice * 1.23; // assuming VAT is 23%
         }
+        console.log('Total price:', totalPrice);
         return totalPrice;
     }
 
