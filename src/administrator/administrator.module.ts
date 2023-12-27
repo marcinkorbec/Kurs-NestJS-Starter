@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { CacheModule, Module, forwardRef } from '@nestjs/common';
 import { AdministratorController } from './administrator.controller';
 import { AdministratorService } from './administrator.service';
 import { BasketItem } from 'src/basket/basket-item.entity';
@@ -12,6 +12,7 @@ import { Basket } from 'src/basket/basket.entity';
   imports: [
     forwardRef(() => BasketModule),
     forwardRef(() => UsersModule),
+    forwardRef(() => CacheModule),
     TypeOrmModule.forFeature([BasketItem, Basket, User])
   ],
   controllers: [AdministratorController],

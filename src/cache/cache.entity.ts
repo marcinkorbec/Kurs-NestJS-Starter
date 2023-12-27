@@ -1,15 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity()
-export class CacheEntity {
+export class CacheItem extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    key: string;
-
     @Column('json')
-    value: any;
+    dataJson: any;
 
     @Column()
     controllerName: string;
