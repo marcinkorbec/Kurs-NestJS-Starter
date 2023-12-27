@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Cache } from './cache.entity';
+import { CacheEntity } from './cache.entity';
 
 @Injectable()
 export class CacheService {
     constructor(
-        @InjectRepository(Cache)
-        private cacheRepository: Repository<Cache>,
+        @InjectRepository(CacheEntity)
+        private cacheRepository: Repository<CacheEntity>,
     ) { }
 
     async getFromCache(key: string): Promise<any> {
