@@ -10,6 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShopItem } from './shop/shop-item.entity';
 import { AdministratorModule } from './administrator/administrator.module';
 import { DiscountModule } from './discount/discount.module';
+import { CronService } from './cron/cron.service';
+import { CronModule } from './cron/cron.module';
 @Module({
     imports: [
         TypeOrmModule.forRoot({ entities: [ShopItem] }),
@@ -18,6 +20,7 @@ import { DiscountModule } from './discount/discount.module';
         UsersModule,
         AdministratorModule,
         DiscountModule,
+        CronModule,
     ],
     controllers: [AppController],
     providers: [
@@ -26,6 +29,7 @@ import { DiscountModule } from './discount/discount.module';
             provide: APP_INTERCEPTOR,
             useClass: TimingInterceptor,
         },
+        CronService,
     ],
 })
 export class AppModule {
