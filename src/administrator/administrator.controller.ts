@@ -3,7 +3,7 @@ import { AdministratorService } from './administrator.service';
 import { PasswordProtectGuard } from 'src/guards/password-protect.guard';
 import { UsePasswordProtect } from 'src/decorators/use-passwors-decorator';
 import { UseCacheTime } from 'src/decorators/use-cache-time.decorator';
-import { MyCacheInterceptor } from '../interceptors/my-cache.interptor';
+//import { MyCacheInterceptor } from '../interceptors/my-cache.interptor';
 
 @Controller('admin')
 export class AdministratorController {
@@ -18,7 +18,7 @@ export class AdministratorController {
 
     @UseGuards(PasswordProtectGuard)
     @UsePasswordProtect('admin2')
-    @UseInterceptors(MyCacheInterceptor)
+    //@UseInterceptors(MyCacheInterceptor)
     @UseCacheTime(10)
     @Get('/users')
     async getAllUsers() {
