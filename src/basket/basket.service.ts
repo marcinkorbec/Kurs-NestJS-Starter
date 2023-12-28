@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BasketItem } from './basket-item.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/users.entity';
+import { MailService } from 'src/mail/mail.service';
+import { addedToBasketInfo } from 'src/templates/email/added-to-basket-info';
 
 @Injectable()
 export class BasketService {
@@ -12,6 +14,7 @@ export class BasketService {
 
     constructor(
         @Inject(forwardRef(() => ShopService)) private shopService: ShopService,
+        @Inject(forwardRef(() => MailService)) private mailservice: MailService,
         @InjectRepository(BasketItem) private basketItemRepository: Repository<BasketItem>,
         @InjectRepository(User) private userRepository: Repository<User>,
     ) { }
@@ -26,6 +29,7 @@ export class BasketService {
             user: user
         });
         await this.basketItemRepository.save(item);
+        await this.mailservice.sendMail('marcinkorbecki.dw@gmail.com', `Dodano ${item.name} do koszyka!`, addedToBasketInfo(item.name, item.count));
         return item;
     }
 

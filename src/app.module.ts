@@ -12,6 +12,7 @@ import { AdministratorModule } from './administrator/administrator.module';
 import { DiscountModule } from './discount/discount.module';
 import { CronService } from './cron/cron.service';
 import { CronModule } from './cron/cron.module';
+import { MailModule } from './mail/mail.module';
 @Module({
     imports: [
         TypeOrmModule.forRoot({ entities: [ShopItem] }),
@@ -21,6 +22,7 @@ import { CronModule } from './cron/cron.module';
         AdministratorModule,
         DiscountModule,
         CronModule,
+        MailModule,
     ],
     controllers: [AppController],
     providers: [
