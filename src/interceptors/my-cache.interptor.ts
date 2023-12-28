@@ -1,63 +1,50 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
-import { CacheItem } from 'src/cache/cache.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CacheItem } from '../cache/cache.entity';
+
 
 @Injectable()
 export class MyCacheInterceptor implements NestInterceptor {
-    constructor(
-        private reflector: Reflector,
-        @InjectRepository(CacheItem)
-        private cacheRepository: Repository<CacheItem>, // Wstrzyknięcie repozytorium
-    ) { }
+    constructor(private reflector: Reflector) { }
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-        const cachedData = await new CacheItem();
-        const cacheTimeInSec = this.reflector.get<number>('cacheTimeInSec', context.getHandler())
-        const controllerName = this.reflector.get<string>('cacheTime', context.getHandler())
+        const cacheTimeInSec = this.reflector.get<number>('cacheTimeInSec', context.getHandler());
+        const controllerName = this.reflector.get<string>('cacheTime', context.getHandler());
         const actionName = context.getHandler().name;
 
-        const cachedResponse = await CacheItem.findOne(
-            {
-                where: {
-                    controllerName,
-                    actionName
-                }
-            }
-        );
+        const cachedResponse = await CacheItem.findOne({
+            where: { controllerName, actionName }
+        });
+
         if (cachedResponse) {
-            if (+cachedData.createdAt + +cacheTimeInSec * 1000 > Date.now()) {
+            if (new Date(cachedResponse.createdAt).getTime() + cacheTimeInSec * 1000 > Date.now()) {
                 console.log('Pobieram dane z cache');
-                return of(JSON.parse(cachedData.dataJson));
+                return of(JSON.parse(cachedResponse.dataJson));
             } else {
                 console.log('Czas cache minął');
-                await cachedData.remove();
+                await cachedResponse.remove();
             }
         }
-
 
         return next.handle().pipe(
             tap(async data => {
                 console.log('Zapisuję dane do cache');
-                const cacheItem = this.cacheRepository.create({
+                const cacheItem = CacheItem.create({
                     dataJson: JSON.stringify(data),
-                    controllerName: controllerName,
-                    actionName: actionName,
-                    // ustawienie createdAt na obecną datę i czas
+                    controllerName,
+                    actionName,
+                    createdAt: new Date()
                 });
 
                 try {
-                    await this.cacheRepository.save(cacheItem);
+                    await CacheItem.save(cacheItem);
                 } catch (error) {
                     console.error('Błąd zapisu do cache', error);
                 }
-                return data;
             })
         );
-
     }
 
     private generateCacheKey(request: any): string {

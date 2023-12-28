@@ -8,4 +8,4 @@ import { CacheItem } from './cache.entity';
   providers: [CacheService],
   exports: [CacheService]
 })
-export class CacheModuleCustom { }
+export class CacheModule { }
