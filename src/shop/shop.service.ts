@@ -4,6 +4,7 @@ import { GetListOfProducts, ShopItem } from './shop-item.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopItemDetails } from './shop-item-details.entity';
+import { AddProductDto } from './DTO/add-product.dto';
 
 
 
@@ -45,7 +46,7 @@ export class ShopService {
         return { data, count };
     }
 
-    async createProduct(product: ShopItem): Promise<ShopItem> {
+    async createProduct(product: AddProductDto): Promise<ShopItem> {
         const newProduct = await this.productRepository.create(product);
         await this.productRepository.save(newProduct);
 
@@ -53,7 +54,9 @@ export class ShopService {
         details.color = 'niebieski';
         details.width = 20;
         await this.productDetailsRepository.save(details);
+        newProduct.photoFn = product.photoFn;
 
+        await this.productRepository.save(newProduct);
 
         newProduct.details = details;
         await this.productRepository.save(newProduct);
