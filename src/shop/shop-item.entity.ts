@@ -45,6 +45,9 @@ export class ShopItem {
 
     @ManyToMany(() => BasketItem)
     baskets: BasketItem[];
+
+    @Column({ default: null, nullable: true })
+    photoFn: string;
 }
 
 export type GetListOfProducts = ShopItem[];
