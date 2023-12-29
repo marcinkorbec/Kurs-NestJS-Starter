@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { GetListOfProducts, ShopService } from './shop.service';
 import { ShopItem } from './shop-item.entity';
 import { AddProductDto } from './DTO/add-product.dto';
@@ -32,10 +32,6 @@ export class ShopController {
     async createProduct(
         @Body() product: AddProductDto
     ): Promise<ShopItem> {
-        if (!files.photo || files.photo.length === 0) {
-            throw new BadRequestException('Photo file is required.');
-        }
-        const file = files.photo[0];
         return this.shopService.createProduct(product);
     }
 
