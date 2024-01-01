@@ -5,6 +5,10 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopItemDetails } from './shop-item-details.entity';
 import { AddProductDto } from './DTO/add-product.dto';
+import { MulterDiskUploadedFiles } from 'src/shared/interfaces/files';
+import { storageDir } from 'src/utils/storage';
+import * as path from 'path';
+const fs = require('fs').promises;
 
 
 
@@ -46,22 +50,81 @@ export class ShopService {
         return { data, count };
     }
 
-    async createProduct(product: AddProductDto): Promise<ShopItem> {
-        const newProduct = await this.productRepository.create(product);
-        await this.productRepository.save(newProduct);
+    // async createProduct(product: AddProductDto, files: MulterDiskUploadedFiles): Promise<ShopItem> {
+    //     let myFile = null;
+    //     try {
+    //         const newProduct = await this.productRepository.create(product);
+    //         myFile = files?.photo?.[0] ?? null;
+    //         console.log(myFile);
 
-        const details = new ShopItemDetails();
-        details.color = 'niebieski';
-        details.width = 20;
-        await this.productDetailsRepository.save(details);
-        newProduct.photoFn = product.photoFn;
+    //         if (myFile) {
+    //             newProduct.photoFn = myFile.filename;
+    //         }
+    //         await this.productRepository.save(newProduct);
 
-        await this.productRepository.save(newProduct);
+    //         throw new Error('Błąd podczas zapisywania produktu');
+    //         const details = new ShopItemDetails();
+    //         details.color = 'niebieski';
+    //         details.width = 20;
+    //         newProduct.details = details;
 
-        newProduct.details = details;
-        await this.productRepository.save(newProduct);
+    //         await this.productDetailsRepository.save(details);
+    //         await this.productRepository.save(newProduct);
 
-        return newProduct;
+    //         return newProduct;
+    //     }
+    //     catch (error) {
+    //         if (myFile && myFile.filename) {
+    //             try {
+    //                 const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
+    //                 await fs.unlinkSync(filePath);
+    //                 console.log('Plik został usunięty z powodu błędu:', error);
+    //             } catch (unlinkError) {
+    //                 console.error('Błąd podczas usuwania pliku', unlinkError);
+    //             }
+    //         }
+
+    //         throw error;
+    //     }
+    // }
+
+    async createProduct(product: AddProductDto, files: MulterDiskUploadedFiles): Promise<ShopItem> {
+        let myFile = null;
+        try {
+            const newProduct = await this.productRepository.create(product);
+            myFile = files?.photo?.[0] ?? null;
+            console.log(myFile);
+
+            if (myFile) {
+                newProduct.photoFn = myFile.filename;
+            }
+            await this.productRepository.save(newProduct);
+
+            //throw new Error('Błąd podczas zapisywania produktu'); // Usuń to, jeśli to tylko do testów
+            // ... reszta twojego kodu ...
+            const details = new ShopItemDetails();
+            details.color = 'niebieski';
+            details.width = 20;
+            newProduct.details = details;
+
+            await this.productDetailsRepository.save(details);
+            await this.productRepository.save(newProduct);
+
+            return newProduct;
+        }
+        catch (error) {
+            if (myFile && myFile.filename) {
+                try {
+                    const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
+                    await fs.unlink(filePath); // Użyj asynchronicznej funkcji unlink
+                    console.log('Plik został usunięty z powodu błędu:', error);
+                } catch (unlinkError) {
+                    console.error('Błąd podczas usuwania pliku', unlinkError);
+                }
+            }
+
+            throw error;
+        }
     }
 
     async getObject(id: string): Promise<ShopItem> {
