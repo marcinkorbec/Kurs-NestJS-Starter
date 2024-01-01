@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { GetListOfProducts, ShopService } from './shop.service';
 import { ShopItem } from './shop-item.entity';
 import { AddProductDto } from './DTO/add-product.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storageDir } from 'src/utils/storage';
 import * as path from 'path';
+import { MulterDiskUploadedFiles } from 'src/shared/interfaces/files';
 
 @Controller('shop')
 export class ShopController {
@@ -30,9 +31,9 @@ export class ShopController {
         })
     )
     async createProduct(
-        @Body() product: AddProductDto
+        @Body() product: AddProductDto, @UploadedFiles() files: MulterDiskUploadedFiles
     ): Promise<ShopItem> {
-        return this.shopService.createProduct(product);
+        return this.shopService.createProduct(product, files);
     }
 
 
