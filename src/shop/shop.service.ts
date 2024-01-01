@@ -1,13 +1,14 @@
 import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { BasketService } from 'src/basket/basket.service';
 import { GetListOfProducts, ShopItem } from './shop-item.entity';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShopItemDetails } from './shop-item-details.entity';
 import { AddProductDto } from './DTO/add-product.dto';
 import { MulterDiskUploadedFiles } from 'src/shared/interfaces/files';
 import { storageDir } from 'src/utils/storage';
 import * as path from 'path';
+import { ShopItemInterface } from 'src/shared';
 const fs = require('fs').promises;
 
 
@@ -23,10 +24,31 @@ export class ShopService {
         private productDetailsRepository: Repository<ShopItemDetails>
     ) { }
 
+    filter(ShopItem: ShopItem): ShopItemInterface {
+        const { id, name, description, priceNet } = ShopItem;
+        return { id, name, description, priceNet };
+    }
 
-    async getObjects(page = 1, limit = 20): Promise<{ items: GetListOfProducts, maxPages: number }> {
+    async getPhoto(id: string, res: any): Promise<any> {
+        try {
+            const one = await this.productRepository.findOne(id);
+            if (!one) {
+                throw new NotFoundException('Product not found');
+            }
+            if (!one.photoFn) {
+                throw new NotFoundException('Photo not found');
+            }
+            res.sendFile(one.photoFn, { root: path.join(storageDir(), 'product-photos') });
+        } catch (error) {
+            throw res.json(error)
+        }
+    }
+
+
+    async getObjects(page = 1, limit = 20, filter?: string): Promise<{ items: GetListOfProducts, maxPages: number }> {
         const [items, totalItems] = await this.productRepository.findAndCount({
             relations: ['details', 'mainProduct'],
+            where: filter ? { name: Like(`%${filter}%`) } : {},
             skip: (page - 1) * limit,
             take: limit
         });
@@ -50,44 +72,6 @@ export class ShopService {
         return { data, count };
     }
 
-    // async createProduct(product: AddProductDto, files: MulterDiskUploadedFiles): Promise<ShopItem> {
-    //     let myFile = null;
-    //     try {
-    //         const newProduct = await this.productRepository.create(product);
-    //         myFile = files?.photo?.[0] ?? null;
-    //         console.log(myFile);
-
-    //         if (myFile) {
-    //             newProduct.photoFn = myFile.filename;
-    //         }
-    //         await this.productRepository.save(newProduct);
-
-    //         throw new Error('Błąd podczas zapisywania produktu');
-    //         const details = new ShopItemDetails();
-    //         details.color = 'niebieski';
-    //         details.width = 20;
-    //         newProduct.details = details;
-
-    //         await this.productDetailsRepository.save(details);
-    //         await this.productRepository.save(newProduct);
-
-    //         return newProduct;
-    //     }
-    //     catch (error) {
-    //         if (myFile && myFile.filename) {
-    //             try {
-    //                 const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
-    //                 await fs.unlinkSync(filePath);
-    //                 console.log('Plik został usunięty z powodu błędu:', error);
-    //             } catch (unlinkError) {
-    //                 console.error('Błąd podczas usuwania pliku', unlinkError);
-    //             }
-    //         }
-
-    //         throw error;
-    //     }
-    // }
-
     async createProduct(product: AddProductDto, files: MulterDiskUploadedFiles): Promise<ShopItem> {
         let myFile = null;
         try {
@@ -100,8 +84,6 @@ export class ShopService {
             }
             await this.productRepository.save(newProduct);
 
-            //throw new Error('Błąd podczas zapisywania produktu'); // Usuń to, jeśli to tylko do testów
-            // ... reszta twojego kodu ...
             const details = new ShopItemDetails();
             details.color = 'niebieski';
             details.width = 20;
