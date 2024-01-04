@@ -60,15 +60,11 @@ export class ShopService {
 
     async getItemsWithPriceGreaterThanTwo(page: number = 1, limit: number = 5): Promise<{ data: ShopItem[], count: number }> {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
-
         queryBuilder.where('product.priceNet > :price', { price: 2 });
-
         const skippedItems = (page - 1) * limit;
         queryBuilder.skip(skippedItems);
         queryBuilder.take(limit);
-
         const [data, count] = await queryBuilder.getManyAndCount();
-
         return { data, count };
     }
 
@@ -98,7 +94,7 @@ export class ShopService {
             if (myFile && myFile.filename) {
                 try {
                     const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
-                    await fs.unlink(filePath); // Użyj asynchronicznej funkcji unlink
+                    await fs.unlink(filePath);
                     console.log('Plik został usunięty z powodu błędu:', error);
                 } catch (unlinkError) {
                     console.error('Błąd podczas usuwania pliku', unlinkError);

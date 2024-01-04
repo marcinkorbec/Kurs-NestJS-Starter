@@ -21,7 +21,7 @@ export class ShopController {
         FileFieldsInterceptor([
             { name: 'photo', maxCount: 1 }
         ], {
-            storage: multerStorage(path.join(storageDir(), 'product-photos')),
+            storage: multerStorage(path.join(storageDir(), 'product-photos'))
         })
     )
     async createProduct(
@@ -36,7 +36,10 @@ export class ShopController {
     }
 
     @Get('/')
-    async getItems(@Query('page') page: number, @Query('limit') limit: number): Promise<{ items: GetListOfProducts, maxPages: number }> {
+    async getItems(
+        @Query('page') page: number,
+        @Query('limit') limit: number
+    ): Promise<{ items: GetListOfProducts, maxPages: number }> {
         const { items, maxPages } = await this.shopService.getObjects(page, limit);
         return { items, maxPages };
     }
