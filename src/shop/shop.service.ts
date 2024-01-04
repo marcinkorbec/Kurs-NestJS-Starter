@@ -94,7 +94,7 @@ export class ShopService {
             if (myFile && myFile.filename) {
                 try {
                     const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
-                    await fs.unlink(filePath); // Użyj asynchronicznej funkcji unlink
+                    await fs.unlink(filePath);
                     console.log('Plik został usunięty z powodu błędu:', error);
                 } catch (unlinkError) {
                     console.error('Błąd podczas usuwania pliku', unlinkError);
