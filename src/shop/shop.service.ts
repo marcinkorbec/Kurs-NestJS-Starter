@@ -60,15 +60,11 @@ export class ShopService {
 
     async getItemsWithPriceGreaterThanTwo(page: number = 1, limit: number = 5): Promise<{ data: ShopItem[], count: number }> {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
-
         queryBuilder.where('product.priceNet > :price', { price: 2 });
-
         const skippedItems = (page - 1) * limit;
         queryBuilder.skip(skippedItems);
         queryBuilder.take(limit);
-
         const [data, count] = await queryBuilder.getManyAndCount();
-
         return { data, count };
     }
 
