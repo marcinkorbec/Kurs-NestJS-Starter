@@ -1,5 +1,4 @@
-import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
-import { BasketService } from 'src/basket/basket.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetListOfProducts, ShopItem } from './shop-item.entity';
 import { Repository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,20 +14,20 @@ const fs = require('fs').promises;
 
 @Injectable()
 export class ShopService {
-
     constructor(
-        @Inject(forwardRef(() => BasketService)) private basketService: BasketService,
-        @InjectRepository(ShopItem)
-        private productRepository: Repository<ShopItem>,
-        @InjectRepository(ShopItemDetails)
-        private productDetailsRepository: Repository<ShopItemDetails>
-    ) { }
+    @InjectRepository(ShopItem)
+    private productRepository: Repository<ShopItem>,
+    @InjectRepository(ShopItemDetails)
+    private productDetailsRepository: Repository<ShopItemDetails>,
+    ) {}
 
     filter(ShopItem: ShopItem): ShopItemInterface {
         const { id, name, description, priceNet } = ShopItem;
+        console.log()
         return { id, name, description, priceNet };
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async getPhoto(id: string, res: any): Promise<any> {
         try {
             const one = await this.productRepository.findOne(id);
@@ -38,19 +37,24 @@ export class ShopService {
             if (!one.photoFn) {
                 throw new NotFoundException('Photo not found');
             }
-            res.sendFile(one.photoFn, { root: path.join(storageDir(), 'product-photos') });
+            res.sendFile(one.photoFn, {
+                root: path.join(storageDir(), 'product-photos'),
+            });
         } catch (error) {
-            throw res.json(error)
+            throw res.json(error);
         }
     }
 
-
-    async getObjects(page = 1, limit = 20, filter?: string): Promise<{ items: GetListOfProducts, maxPages: number }> {
+    async getObjects(
+        page = 1,
+        limit = 20,
+        filter?: string,
+    ): Promise<{ items: GetListOfProducts; maxPages: number }> {
         const [items, totalItems] = await this.productRepository.findAndCount({
             relations: ['details', 'mainProduct'],
             where: filter ? { name: Like(`%${filter}%`) } : {},
             skip: (page - 1) * limit,
-            take: limit
+            take: limit,
         });
 
         const maxPages = Math.ceil(totalItems / limit);
@@ -58,7 +62,10 @@ export class ShopService {
         return { items, maxPages };
     }
 
-    async getItemsWithPriceGreaterThanTwo(page: number = 1, limit: number = 5): Promise<{ data: ShopItem[], count: number }> {
+    async getItemsWithPriceGreaterThanTwo(
+        page = 1,
+        limit = 5,
+    ): Promise<{ data: ShopItem[]; count: number }> {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
         queryBuilder.where('product.priceNet > :price', { price: 2 });
         const skippedItems = (page - 1) * limit;
@@ -68,10 +75,13 @@ export class ShopService {
         return { data, count };
     }
 
-    async createProduct(product: AddProductDto, files: MulterDiskUploadedFiles): Promise<ShopItem> {
+    async createProduct(
+        product: AddProductDto,
+        files: MulterDiskUploadedFiles,
+    ): Promise<ShopItem> {
         let myFile = null;
         try {
-            const newProduct = await this.productRepository.create(product);
+            const newProduct = this.productRepository.create(product);
             myFile = files?.photo?.[0] ?? null;
             console.log(myFile);
 
@@ -89,11 +99,14 @@ export class ShopService {
             await this.productRepository.save(newProduct);
 
             return newProduct;
-        }
-        catch (error) {
+        } catch (error) {
             if (myFile && myFile.filename) {
                 try {
-                    const filePath = path.join(storageDir(), 'product-photos', myFile.filename);
+                    const filePath = path.join(
+                        storageDir(),
+                        'product-photos',
+                        myFile.filename,
+                    );
                     await fs.unlink(filePath);
                     console.log('Plik został usunięty z powodu błędu:', error);
                 } catch (unlinkError) {
@@ -114,16 +127,20 @@ export class ShopService {
     }
 
     async doesProductExist(productName: string): Promise<boolean> {
-        const product = await this.productRepository.find({ where: { name: productName } });
-        return await product !== undefined;
+        const product = await this.productRepository.find({
+            where: { name: productName },
+        });
+        return product !== undefined;
     }
 
     async getNetPrice(productName: string): Promise<number> {
-        const product = await this.productRepository.findOne({ where: { name: productName } });
+        const product = await this.productRepository.findOne({
+            where: { name: productName },
+        });
         if (!product) {
             throw new NotFoundException('Product not found');
         }
-        return await product.priceNet;
+        return product.priceNet;
     }
 
     // countPromo(): number {
@@ -133,7 +150,6 @@ export class ShopService {
     //     }
     //     return Math.floor(totalPrice / 10);
     // }
-
 }
 export { GetListOfProducts };
 

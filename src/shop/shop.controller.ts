@@ -51,5 +51,4 @@ export class ShopController {
     ): Promise<any> {
         return this.shopService.getPhoto(id, res);
     }
-
 }
