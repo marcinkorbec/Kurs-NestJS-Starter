@@ -21,7 +21,11 @@ export class UserController {
     }
 
     @Put('/edit/:id')
-    async editUser(@Param('id') id: number, @Body() newLogin, @Body() newPassword) {
+    async editUser(
+        @Param('id') id: number,
+        @Body() newLogin,
+        @Body() newPassword,
+    ) {
         return await this.userService.editUser(id, newLogin, newPassword);
     }
 }
