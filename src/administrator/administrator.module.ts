@@ -9,12 +9,12 @@ import { UsersModule } from 'src/users/users.module';
 import { Basket } from 'src/basket/basket.entity';
 
 @Module({
-  imports: [
-    forwardRef(() => BasketModule),
-    forwardRef(() => UsersModule),
-    TypeOrmModule.forFeature([BasketItem, Basket, User])
-  ],
-  controllers: [AdministratorController],
-  providers: [AdministratorService, BasketItem, User],
+    imports: [
+        forwardRef(() => BasketModule),
+        forwardRef(() => UsersModule),
+        TypeOrmModule.forFeature([BasketItem, Basket, User])
+    ],
+    controllers: [AdministratorController],
+    providers: [AdministratorService, BasketItem, User],
 })
 export class AdministratorModule { }
