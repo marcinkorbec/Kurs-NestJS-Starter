@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
@@ -6,14 +10,12 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/shared/DTOs/create-user.dto';
 import { SafeUserResponse } from './DTO/user-response';
 
-
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-    ) { }
-
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    ) {}
 
     filtering(user: User): SafeUserResponse {
         const { id, login } = user;
@@ -30,13 +32,20 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto): Promise<SafeUserResponse> {
         const { login, password } = createUserDto;
         const hashedPassword = await this.hashPassword(password);
-        const newUser = this.userRepository.create({ login, password: hashedPassword });
+        const newUser = this.userRepository.create({
+            login,
+            password: hashedPassword,
+        });
         const savedUser = await this.userRepository.save(newUser);
         return this.filtering(savedUser);
     }
 
     // Edycja użytkownika
-    async editUser(userId: number, newLogin: string, newPassword: string): Promise<SafeUserResponse> {
+    async editUser(
+        userId: number,
+        newLogin: string,
+        newPassword: string,
+    ): Promise<SafeUserResponse> {
         const user = await this.userRepository.findOne(userId);
 
         if (!user) {
@@ -46,7 +55,7 @@ export class UsersService {
         user.login = newLogin;
         user.password = hashedPassword;
         await this.userRepository.save(user);
-        return this.filtering(user)
+        return this.filtering(user);
     }
 
     // logowanie użytkownika
@@ -75,7 +84,4 @@ export class UsersService {
         const users: User[] = await this.userRepository.find();
         return users.map(user => this.filtering(user));
     }
-
 }
-
-
