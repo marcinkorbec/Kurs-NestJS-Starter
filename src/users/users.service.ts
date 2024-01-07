@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './users.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/shared/DTOs/create-user.dto';
+import { SafeUserResponse } from './DTO/user-response';
 
 
 @Injectable()
@@ -13,6 +14,12 @@ export class UsersService {
         private userRepository: Repository<User>,
     ) { }
 
+
+    filtering(user: User): SafeUserResponse {
+        const { id, login } = user;
+        return { id, login };
+    }
+
     // Metoda do hashowania hasła
     private async hashPassword(password: string): Promise<string> {
         const salt = await bcrypt.genSalt();
@@ -20,15 +27,16 @@ export class UsersService {
     }
 
     // Dodawanie użytkownika
-    async createUser(createUserDto: CreateUserDto): Promise<User> {
+    async createUser(createUserDto: CreateUserDto): Promise<SafeUserResponse> {
         const { login, password } = createUserDto;
         const hashedPassword = await this.hashPassword(password);
         const newUser = this.userRepository.create({ login, password: hashedPassword });
-        return this.userRepository.save(newUser);
+        const savedUser = await this.userRepository.save(newUser);
+        return this.filtering(savedUser);
     }
 
     // Edycja użytkownika
-    async editUser(userId: number, newLogin: string, newPassword: string): Promise<User> {
+    async editUser(userId: number, newLogin: string, newPassword: string): Promise<SafeUserResponse> {
         const user = await this.userRepository.findOne(userId);
 
         if (!user) {
@@ -37,11 +45,12 @@ export class UsersService {
         const hashedPassword = await this.hashPassword(newPassword);
         user.login = newLogin;
         user.password = hashedPassword;
-        return this.userRepository.save(user);
+        await this.userRepository.save(user);
+        return this.filtering(user)
     }
 
     // logowanie użytkownika
-    async loginUser(login: string, password: string): Promise<User> {
+    async loginUser(login: string, password: string): Promise<SafeUserResponse> {
         const user = await this.userRepository.findOne({ login });
         if (!user) {
             throw new NotFoundException('Invalid credentials');
@@ -50,7 +59,7 @@ export class UsersService {
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
-        return user;
+        return this.filtering(user);
     }
 
     // Usuwanie użytkownika
@@ -62,8 +71,9 @@ export class UsersService {
     }
 
     // Pobieranie wszystkich użytkowników
-    async getAllUsers(): Promise<User[]> {
-        return await this.userRepository.find();
+    async getAllUsers(): Promise<SafeUserResponse[]> {
+        const users: User[] = await this.userRepository.find();
+        return users.map(user => this.filtering(user));
     }
 
 }
