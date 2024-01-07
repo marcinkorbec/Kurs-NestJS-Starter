@@ -23,7 +23,6 @@ export class ShopService {
 
     filter(ShopItem: ShopItem): ShopItemInterface {
         const { id, name, description, priceNet } = ShopItem;
-        console.log()
         return { id, name, description, priceNet };
     }
 
