@@ -12,6 +12,9 @@ export class User {
     @Column()
     password: string;
 
+    @Column({nullable: true, default: null})
+    currentTokenId: string | undefined;
+
     @OneToMany(() => BasketItem, basketItem => basketItem.user)
     basketItems: BasketItem[];
 }
