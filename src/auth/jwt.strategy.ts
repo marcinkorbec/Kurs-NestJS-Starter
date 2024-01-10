@@ -1,12 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { AuthService } from './auth.service';
+import { Strategy } from 'passport-jwt';
 import { User } from 'src/users/users.entity';
 
 export interface JwtPayload {
     id: string;
-    login: string;
 }
 
 function cookieExtractor(req: any): null | string {
@@ -17,11 +15,12 @@ function cookieExtractor(req: any): null | string {
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor() {
         super({
-            jwtFromRequest: cookieExtractor,,
-            secretOrKey: 'iwfygluylsycbidcwIFJFAIFVBSDCIUSDFAIUSDVHIAUSDVNDAFYVUSVSsdvn', // Replace with your own secret key
+            jwtFromRequest: cookieExtractor,
+            secretOrKey: 'iwfygluylsycbidcwIFJFAIFVBSDCIUSDFAIUSDVHIAUSDVNDAFYVUSVSsdvn',
         });
     }
 
+    //tam metoda sprawdza czy
     async validate(payload: JwtPayload, done: (err: Error, user: User) => void) {
         if (!payload || !payload.id) {
             return done(new UnauthorizedException(), null);
