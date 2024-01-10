@@ -1,8 +1,8 @@
 import { BasketItem } from 'src/basket/basket-item.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from 'typeorm';
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -12,7 +12,7 @@ export class User {
     @Column()
     password: string;
 
-    @Column({nullable: true, default: null})
+    @Column({ nullable: true, default: null })
     currentTokenId: string | undefined;
 
     @OneToMany(() => BasketItem, basketItem => basketItem.user)
