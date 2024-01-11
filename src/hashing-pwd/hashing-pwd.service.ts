@@ -8,5 +8,9 @@ export class HashingService {
         const salt = await bcrypt.genSalt();
         return bcrypt.hash(password, salt);
     }
+
+    async comparePassword(candidatePassword: string, hashedPassword: string): Promise<boolean> {
+        return bcrypt.compare(candidatePassword, hashedPassword);
+    }
 }
 export default HashingService;
