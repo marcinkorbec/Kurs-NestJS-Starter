@@ -6,32 +6,29 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
-import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/shared/DTOs/create-user.dto';
 import { SafeUserResponse } from './DTO/user-response';
+import { HashingService } from '../hashing-pwd/hashing-pwd.service';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
     constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    ) {}
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+        private hashingService: HashingService,
+    ) { }
 
     filtering(user: User): SafeUserResponse {
         const { id, login } = user;
         return { id, login };
     }
 
-    // Metoda do hashowania hasła
-    private async hashPassword(password: string): Promise<string> {
-        const salt = await bcrypt.genSalt();
-        return bcrypt.hash(password, salt);
-    }
-
     // Dodawanie użytkownika
     async createUser(createUserDto: CreateUserDto): Promise<SafeUserResponse> {
         const { login, password } = createUserDto;
-        const hashedPassword = await this.hashPassword(password);
+        const hashedPassword = await this.hashingService.hashPassword(password);
         const newUser = this.userRepository.create({
             login,
             password: hashedPassword,
@@ -51,7 +48,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException('User not found');
         }
-        const hashedPassword = await this.hashPassword(newPassword);
+        const hashedPassword = await this.hashingService.hashPassword(newPassword);
         user.login = newLogin;
         user.password = hashedPassword;
         await this.userRepository.save(user);

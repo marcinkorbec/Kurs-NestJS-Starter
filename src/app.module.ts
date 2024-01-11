@@ -14,8 +14,10 @@ import { CronService } from './cron/cron.service';
 import { CronModule } from './cron/cron.module';
 import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
+import { HashingModule } from './hashing-pwd/hashing-pwd.module';
 @Module({
     imports: [
+        HashingModule,
         TypeOrmModule.forRoot({ entities: [ShopItem] }),
         BasketModule,
         ShopModule,
