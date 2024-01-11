@@ -29,7 +29,7 @@ export class BasketService {
             user: user
         });
         await this.basketItemRepository.save(item);
-        await this.mailservice.sendMail('marcinkorbecki.dw@gmail.com', `Dodano ${item.name} do koszyka!`, addedToBasketInfo(item.name, item.count));
+        //await this.mailservice.sendMail('marcinkorbecki.dw@gmail.com', `Dodano ${item.name} do koszyka!`, addedToBasketInfo(item.name, item.count));
         return item;
     }
 
