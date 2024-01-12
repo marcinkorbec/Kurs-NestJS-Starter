@@ -16,7 +16,7 @@ export class AuthService {
     private createToken(currentTokenId: string): { accessToken: string, expiresIn: number } {
         const payload = { id: currentTokenId };
         const expiresIn = 60 * 60 * 24 * 30;
-        const accessToken = sign(payload, 'iwfygluylsycbidcwIFJFAIFVBSDCIUSDFAIUSDVHIAUSDVNDAFYVUSVSsdvn', { expiresIn });
+        const accessToken = sign(payload, 'testowyklucz', { expiresIn });
         return {
             accessToken,
             expiresIn
@@ -59,6 +59,26 @@ export class AuthService {
                 .json({ message: 'Success' });
         } catch (error) {
             return res.json({ message: error.message });
+        }
+    }
+
+    async logout(user: User, res: Response) {
+        try {
+            user.currentTokenId = null;
+            await user.save();
+            res.clearCookie(
+                'jwt',
+                {
+                    secure: false,
+                    domain: 'localhost',
+                    httpOnly: true
+                }
+            );
+            return res.json({ok: true});
+        } catch (e) {
+            res.json {
+                return res.json({error: e.message});
+            }
         }
     }
 }
