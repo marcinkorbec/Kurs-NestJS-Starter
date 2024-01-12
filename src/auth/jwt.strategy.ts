@@ -16,12 +16,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor() {
         super({
             jwtFromRequest: cookieExtractor,
-            secretOrKey: 'iwfygluylsycbidcwIFJFAIFVBSDCIUSDFAIUSDVHIAUSDVNDAFYVUSVSsdvn',
+            secretOrKey: 'testowyklucz',
         });
     }
 
     //tam metoda sprawdza czy
     async validate(payload: JwtPayload, done: (err: Error, user: User) => void) {
+        console.log(payload);
+
         if (!payload || !payload.id) {
             return done(new UnauthorizedException(), null);
         }
@@ -29,6 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         if (!user) {
             throw new UnauthorizedException();
         }
+        console.log(user);
         return user;
     }
 }
