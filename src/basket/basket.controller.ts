@@ -12,12 +12,12 @@ export class BasketController {
     constructor(private readonly basketService: BasketService) { }
 
     @Post('/add')
-    @UseGuards(AuthGuard('jwt'))
+    //@UseGuards(AuthGuard('jwt'))
     async addToBasket(
-        @Req() req: Request,
+        //@Req() req: Request,
         @Body() createBasketItemDto: CreateBasketItemDto,
         @UserObject() user: User) {
-        const userId = req.user?.id;
+        const userId = user?.id;
         return await this.basketService.addToBasket(userId, createBasketItemDto);
     }
 
